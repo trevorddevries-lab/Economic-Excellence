@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Financial Score & Interest Rates</title>
+  <title>Financial Dashboard</title>
+
   <style>
     * { box-sizing: border-box; }
     body {
@@ -25,25 +26,7 @@
       margin-bottom: 20px;
     }
     h1 { margin-top: 0; }
-    label { display: block; margin-top: 10px; margin-bottom: 6px; }
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: white;
-    }
-    button {
-      margin-top: 15px;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-      width: 100%;
-    }
+
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -56,46 +39,39 @@
       padding: 16px;
     }
     .value {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
       margin-top: 8px;
     }
   </style>
 </head>
+
 <body>
   <div class="app">
+
+    
     <div class="panel">
-      <h1>Financial Score Calculator</h1>
+      <h1>Financial Score</h1>
 
-      <label>Income</label>
-      <input type="number" id="income" />
-
-      <label>Rent</label>
-      <input type="number" id="rent" />
-
-      <label>Food</label>
-      <input type="number" id="food" />
-
-      <label>Transport</label>
-      <input type="number" id="transport" />
-
-      <label>Utilities</label>
-      <input type="number" id="utils" />
-
-      <button onclick="calculateScore()">Calculate Score</button>
-
-      <div class="cards" style="margin-top:20px;">
+      <div class="cards">
         <div class="card">
           <div>Score</div>
-          <div class="value" id="score">-</div>
+          <div class="value">{{ score }}</div>
         </div>
+
         <div class="card">
           <div>Status</div>
-          <div class="value" id="status">-</div>
+          <div class="value">{{ status }}</div>
+        </div>
+
+        <div class="card">
+          <div>Survival Months</div>
+          <div class="value">{{ survival }}</div>
         </div>
       </div>
     </div>
 
+    
     <div class="panel">
       <h1>Live Interest Rates</h1>
       <button onclick="fetchRates()">Refresh Rates</button>
@@ -115,30 +91,15 @@
         </div>
       </div>
     </div>
+
   </div>
 
   <script>
-    async function calculateScore() {
-      const income = document.getElementById('income').value;
-      const rent = document.getElementById('rent').value;
-      const food = document.getElementById('food').value;
-      const transport = document.getElementById('transport').value;
-      const utils = document.getElementById('utils').value;
-
-      const response = await fetch(`/calculate?income=${income}&rent=${rent}&food=${food}&transport=${transport}&utils=${utils}`);
-      const data = await response.json();
-
-      document.getElementById('score').textContent = data.score ?? 'N/A';
-      document.getElementById('status').textContent = data.status ?? 'N/A';
-    }
-
     async function fetchRates() {
       try {
-        // Example public API (replace if needed)
         const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await res.json();
+        await res.json();
 
-        // Mock mapping since API is currency-focused
         document.getElementById('mortgageRate').textContent = '6.5%';
         document.getElementById('savingsRate').textContent = '4.2%';
         document.getElementById('autoRate').textContent = '7.1%';
