@@ -102,7 +102,7 @@ def round_dict(d):
 
 
 def calculate_percentages(needs_total, wants_total, income):
-    if income ==0:
+    if income <= 0:
         return {
             "needs_pct": 0,
             "wants_pct": 0
