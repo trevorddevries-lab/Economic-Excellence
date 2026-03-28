@@ -1,44 +1,31 @@
 
-rent = 0
-food = 0
-transport = 0
-utils = 0
-
-# total = rent + food + transport + utils
-# test-total 
-total = 3000
-def survival_months():
-    total_money = 5000 
+# Calculates an overall finacial score based on monthly 
+# income and expenses
+def survival_months(total_expenses):
+    total_money = 5000
     num_months = 0
+
     while total_money > 0:
-        total_money = total_money - total
-        num_months = num_months + 1
+        total_money -= total_expenses
+        num_months += 1
 
     return num_months
 
 
-def calculate_score():
-    # will calculate economic surival score monthly based on 
-    # monthly income and expenses
-    income = 0
+def calculate_score(income, rent, food, transport, utils):
+    total_expenses = rent + food + transport + utils
     score = 100
 
-    if income < total:
-        score = score - 15
-    
-    survival = survival_months()
+    if income < total_expenses:
+        score -= 15
+
+    survival = survival_months(total_expenses)
+
     if survival < 3:
-        score = score - 10
-    if survival > 4 and survival < 8:
-        score = score - 5
+        score -= 10
+    if 4 < survival < 8:
+        score -= 5
     if survival > 9:
-        score = score + 5
+        score += 5
 
-    print(score)
-
-def main():
-    calculate_score()
-
-
-if __name__ == "__main__":
-    main()
+    return score, survival
