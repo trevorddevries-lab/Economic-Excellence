@@ -6,17 +6,20 @@
   <title>Inflation Survival Budget MVP</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: #e2e8f0;
     }
+
     .app {
       max-width: 1200px;
       margin: 0 auto;
       padding: 24px;
     }
+
     .hero {
       margin-bottom: 24px;
       padding: 20px;
@@ -24,29 +27,65 @@
       border-radius: 16px;
       border: 1px solid #334155;
     }
+
     .hero h1 {
       margin: 0 0 8px;
       font-size: 2rem;
     }
+
     .hero p {
       margin: 0;
       color: #cbd5e1;
     }
+
+    .top-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .page-tab {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #1e293b;
+      color: #e2e8f0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .page-tab.active {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 360px 1fr;
       gap: 20px;
     }
+
     .panel {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 16px;
       padding: 20px;
     }
+
     .panel h2 {
       margin-top: 0;
       font-size: 1.2rem;
     }
+
     .section-title {
       margin: 20px 0 10px;
       font-size: 0.95rem;
@@ -54,12 +93,14 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
+
     label {
       display: block;
       margin-bottom: 6px;
       font-size: 0.95rem;
       color: #cbd5e1;
     }
+
     input, select {
       width: 100%;
       padding: 12px;
@@ -69,12 +110,14 @@
       color: white;
       margin-bottom: 12px;
     }
+
     .toggle-row {
       display: flex;
       gap: 10px;
       margin-bottom: 14px;
       flex-wrap: wrap;
     }
+
     .toggle-btn {
       flex: 1;
       min-width: 120px;
@@ -85,10 +128,12 @@
       color: #e2e8f0;
       cursor: pointer;
     }
+
     .toggle-btn.active {
       background: #2563eb;
       border-color: #2563eb;
     }
+
     .crisis-toggle {
       display: flex;
       justify-content: space-between;
@@ -98,14 +143,19 @@
       background: #3f1d1d;
       border: 1px solid #7f1d1d;
       margin-top: 8px;
+      gap: 16px;
     }
+
     .switch {
       position: relative;
       display: inline-block;
       width: 52px;
       height: 28px;
+      flex-shrink: 0;
     }
+
     .switch input { display: none; }
+
     .slider {
       position: absolute;
       inset: 0;
@@ -114,6 +164,7 @@
       cursor: pointer;
       transition: 0.2s;
     }
+
     .slider::before {
       content: "";
       position: absolute;
@@ -125,88 +176,163 @@
       border-radius: 50%;
       transition: 0.2s;
     }
+
     input:checked + .slider {
       background: #ef4444;
     }
+
     input:checked + .slider::before {
       transform: translateX(24px);
     }
+
     .cards {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
       margin-bottom: 20px;
     }
+
     .card {
       background: #0f172a;
       border: 1px solid #334155;
       border-radius: 14px;
       padding: 16px;
     }
+
     .card .label {
       color: #94a3b8;
       font-size: 0.9rem;
       margin-bottom: 8px;
     }
+
     .card .value {
       font-size: 1.6rem;
       font-weight: bold;
     }
+
     .budget-bars {
       display: grid;
       gap: 14px;
       margin-bottom: 20px;
     }
-    .bar-wrap { background: #0f172a; padding: 14px; border-radius: 14px; border: 1px solid #334155; }
+
+    .bar-wrap {
+      background: #0f172a;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+    }
+
     .bar-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
       font-size: 0.95rem;
+      gap: 10px;
     }
+
     .bar {
       height: 14px;
       background: #334155;
       border-radius: 999px;
       overflow: hidden;
     }
+
     .fill {
       height: 100%;
       border-radius: 999px;
     }
+
     .fill.needs { background: #f59e0b; }
     .fill.wants { background: #38bdf8; }
     .fill.savings { background: #22c55e; }
+
     .alerts, .extras {
       display: grid;
       gap: 12px;
     }
+
     .alert {
       padding: 14px;
       border-radius: 12px;
       border-left: 5px solid;
       background: #0f172a;
     }
+
     .safe { border-color: #22c55e; }
     .warn { border-color: #f59e0b; }
     .danger { border-color: #ef4444; }
+
     .small {
       color: #94a3b8;
       font-size: 0.9rem;
     }
+
     .extras-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
       margin-top: 20px;
     }
+
     .tip-list {
       margin: 8px 0 0;
       padding-left: 18px;
       color: #cbd5e1;
     }
+
+    .result-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+    }
+
+    .result-row .result-label {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .result-row .result-value {
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .mortgage-highlight {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .note-box {
+      margin-top: 16px;
+      padding: 14px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      color: #cbd5e1;
+    }
+
+    .mono {
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+    }
+
     @media (max-width: 900px) {
-      .grid, .cards, .extras-grid { grid-template-columns: 1fr; }
+      .grid, .cards, .extras-grid, .mortgage-highlight {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -217,119 +343,278 @@
       <p>Build a crisis-ready budget that adapts during inflation spikes or economic crashes.</p>
     </div>
 
-    <div class="grid">
-      <div class="panel">
-        <h2>Inputs</h2>
+    <div class="top-tabs">
+      <button class="page-tab active" id="dashboardTab">Dashboard</button>
+      <button class="page-tab" id="mortgageTab">Mortgage</button>
+    </div>
 
-        <div class="section-title">Income</div>
-        <div class="toggle-row">
-          <button class="toggle-btn active" id="monthlyBtn">Monthly</button>
-          <button class="toggle-btn" id="biweeklyBtn">Biweekly</button>
-        </div>
-        <label for="income">Income Amount ($)</label>
-        <input type="number" id="income" value="4000" min="0" />
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="dashboardPage">
+      <div class="grid">
+        <div class="panel">
+          <h2>Inputs</h2>
 
-        <div class="section-title">Expenses</div>
-        <label for="rent">Rent / Housing</label>
-        <input type="number" id="rent" value="1400" min="0" />
-
-        <label for="food">Food</label>
-        <input type="number" id="food" value="500" min="0" />
-
-        <label for="transport">Transport</label>
-        <input type="number" id="transport" value="250" min="0" />
-
-        <label for="other">Other / Discretionary</label>
-        <input type="number" id="other" value="600" min="0" />
-
-        <label for="savings">Current Emergency Savings ($)</label>
-        <input type="number" id="savings" value="3000" min="0" />
-
-        <div class="crisis-toggle">
-          <div>
-            <strong>Crisis Mode!</strong>
-            <div class="small">Simulate inflation and survival budgeting</div>
+          <div class="section-title">Income</div>
+          <div class="toggle-row">
+            <button class="toggle-btn active" id="monthlyBtn">Monthly</button>
+            <button class="toggle-btn" id="biweeklyBtn">Biweekly</button>
           </div>
-          <label class="switch">
-            <input type="checkbox" id="crisisMode" />
-            <span class="slider"></span>
-          </label>
+
+          <label for="income">Income Amount ($)</label>
+          <input type="number" id="income" value="4000" min="0" />
+
+          <div class="section-title">Expenses</div>
+
+          <label for="rent">Rent / Housing</label>
+          <input type="number" id="rent" value="1400" min="0" />
+
+          <label for="food">Food</label>
+          <input type="number" id="food" value="500" min="0" />
+
+          <label for="transport">Transport</label>
+          <input type="number" id="transport" value="250" min="0" />
+
+          <label for="other">Other / Discretionary</label>
+          <input type="number" id="other" value="600" min="0" />
+
+          <label for="savings">Current Emergency Savings ($)</label>
+          <input type="number" id="savings" value="3000" min="0" />
+
+          <div class="crisis-toggle">
+            <div>
+              <strong>Crisis Mode!</strong>
+              <div class="small">Simulate inflation and survival budgeting</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="crisisMode" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="note-box">
+            <strong>Mortgage integration:</strong>
+            <div class="small" id="mortgageModeNote">Dashboard is currently using Rent / Housing.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Dashboard</h2>
+
+          <div class="cards">
+            <div class="card">
+              <div class="label">Monthly Income</div>
+              <div class="value" id="monthlyIncomeDisplay">$4,000</div>
+            </div>
+            <div class="card">
+              <div class="label">Leftover Money</div>
+              <div class="value" id="leftoverDisplay">$1,250</div>
+            </div>
+            <div class="card">
+              <div class="label">Emergency Fund Survival</div>
+              <div class="value" id="burnRateDisplay">1.1 months</div>
+            </div>
+            <div class="card">
+              <div class="label">Budget Status</div>
+              <div class="value" id="statusDisplay">Warning</div>
+            </div>
+          </div>
+
+          <div class="budget-bars">
+            <div class="bar-wrap">
+              <div class="bar-header">
+                <span>Needs</span>
+                <span id="needsText">$2,150 / 50%</span>
+              </div>
+              <div class="bar"><div class="fill needs" id="needsBar" style="width: 0%"></div></div>
+            </div>
+
+            <div class="bar-wrap">
+              <div class="bar-header">
+                <span>Wants</span>
+                <span id="wantsText">$600 / 30%</span>
+              </div>
+              <div class="bar"><div class="fill wants" id="wantsBar" style="width: 0%"></div></div>
+            </div>
+
+            <div class="bar-wrap">
+              <div class="bar-header">
+                <span>Savings Potential</span>
+                <span id="savingsText">$1,250 / 20%</span>
+              </div>
+              <div class="bar"><div class="fill savings" id="savingsBar" style="width: 0%"></div></div>
+            </div>
+          </div>
+
+          <h3>Survival Insights</h3>
+          <div class="alerts" id="alerts"></div>
+
+          <div class="extras-grid">
+            <div class="card">
+              <div class="label">Mock Credit Score</div>
+              <div class="value" id="creditScoreDisplay">Fair</div>
+              <div class="small">Based on remaining monthly cash flow.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">Mortgage Estimate</div>
+              <div class="value" id="mortgageDisplay">$1,610/mo</div>
+              <div class="small" id="mortgageDisplaySubtext">Mortgage tab provides a full estimate.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">Max Affordable Home</div>
+              <div class="value" id="maxHomeDisplay">$0</div>
+              <div class="small">Calculated from mortgage affordability rules.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">Inflation-Safe Tips</div>
+              <ul class="tip-list">
+                <li>Keep cash in a high-yield savings account</li>
+                <li>Look into TIPS or other low-risk assets</li>
+                <li>Build a 3–6 month emergency fund</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="panel">
-        <h2>Dashboard</h2>
+    <!-- MORTGAGE PAGE -->
+    <div class="page" id="mortgagePage">
+      <div class="grid">
+        <div class="panel">
+          <h2>Mortgage Inputs</h2>
 
-        <div class="cards">
-          <div class="card">
-            <div class="label">Monthly Income</div>
-            <div class="value" id="monthlyIncomeDisplay">$4,000</div>
+          <div class="section-title">Borrower Profile</div>
+
+          <label for="mortgageCreditScore">Credit Score</label>
+          <input type="number" id="mortgageCreditScore" value="730" min="300" max="850" />
+
+          <label for="mortgageAnnualIncome">Annual Income ($)</label>
+          <input type="number" id="mortgageAnnualIncome" value="48000" min="0" />
+
+          <label for="mortgageMonthlyDebt">Monthly Debt Payments ($)</label>
+          <input type="number" id="mortgageMonthlyDebt" value="400" min="0" />
+
+          <div class="section-title">Home Details</div>
+
+          <label for="mortgageHomePrice">Home Price ($)</label>
+          <input type="number" id="mortgageHomePrice" value="300000" min="0" />
+
+          <label for="mortgageDownPayment">Down Payment ($)</label>
+          <input type="number" id="mortgageDownPayment" value="30000" min="0" />
+
+          <label for="mortgageLoanTerm">Loan Term</label>
+          <select id="mortgageLoanTerm">
+            <option value="15">15 years</option>
+            <option value="20">20 years</option>
+            <option value="30" selected>30 years</option>
+          </select>
+
+          <div class="crisis-toggle">
+            <div>
+              <strong>Use Mortgage Instead of Rent</strong>
+              <div class="small">When enabled, dashboard housing uses total mortgage cost.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="useMortgageForBudget" />
+              <span class="slider"></span>
+            </label>
           </div>
-          <div class="card">
-            <div class="label">Leftover Money</div>
-            <div class="value" id="leftoverDisplay">$1,250</div>
+
+          <div class="note-box">
+            <strong>Income sync:</strong>
+            <div class="small">This annual income can auto-sync from the dashboard income amount.</div>
           </div>
-          <div class="card">
-            <div class="label">Emergency Fund Survival</div>
-            <div class="value" id="burnRateDisplay">1.1 months</div>
-          </div>
-          <div class="card">
-            <div class="label">Budget Status</div>
-            <div class="value" id="statusDisplay">Warning</div>
-          </div>
+
+          <button class="toggle-btn" id="syncIncomeBtn" style="width: 100%; margin-top: 14px;">
+            Sync Annual Income from Dashboard
+          </button>
         </div>
 
-        <div class="budget-bars">
-          <div class="bar-wrap">
-            <div class="bar-header">
-              <span>Needs</span>
-              <span id="needsText">$2,150 / 50%</span>
-            </div>
-            <div class="bar"><div class="fill needs" id="needsBar" style="width: 0%"></div></div>
-          </div>
-          <div class="bar-wrap">
-            <div class="bar-header">
-              <span>Wants</span>
-              <span id="wantsText">$600 / 30%</span>
-            </div>
-            <div class="bar"><div class="fill wants" id="wantsBar" style="width: 0%"></div></div>
-          </div>
-          <div class="bar-wrap">
-            <div class="bar-header">
-              <span>Savings Potential</span>
-              <span id="savingsText">$1,250 / 20%</span>
-            </div>
-            <div class="bar"><div class="fill savings" id="savingsBar" style="width: 0%"></div></div>
-          </div>
-        </div>
+        <div class="panel">
+          <h2>Mortgage Results</h2>
 
-        <h3>Survival Insights</h3>
-        <div class="alerts" id="alerts"></div>
+          <div class="result-list">
+            <div class="result-row">
+              <div class="result-label">Interest Rate</div>
+              <div class="result-value" id="resultInterestRate">6.50%</div>
+            </div>
 
-        <div class="extras-grid">
-          <div class="card">
-            <div class="label">Mock Credit Score</div>
-            <div class="value" id="creditScoreDisplay">Fair</div>
-            <div class="small">Based on remaining monthly cash flow.</div>
+            <div class="result-row">
+              <div class="result-label">Principal &amp; Interest</div>
+              <div class="result-value" id="resultMortgage">$0</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Monthly Property Tax</div>
+              <div class="result-value" id="resultTax">$0</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Monthly Insurance</div>
+              <div class="result-value" id="resultInsurance">$0</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Monthly PMI</div>
+              <div class="result-value" id="resultPMI">$0</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Total Monthly Housing Cost</div>
+              <div class="result-value" id="resultTotalCost">$0</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Housing Ratio</div>
+              <div class="result-value" id="resultHousingRatio">0%</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Debt Ratio</div>
+              <div class="result-value" id="resultDebtRatio">0%</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Affordability</div>
+              <div class="result-value" id="resultAffordable">—</div>
+            </div>
+
+            <div class="result-row">
+              <div class="result-label">Max Affordable Home Price</div>
+              <div class="result-value" id="resultMaxHome">$0</div>
+            </div>
           </div>
-          <div class="card">
-            <div class="label">Mortgage Estimate</div>
-            <div class="value" id="mortgageDisplay">$1,610/mo</div>
-            <div class="small">Simple sample estimate on a $250k loan.</div>
+
+          <div class="mortgage-highlight">
+            <div class="card">
+              <div class="label">Budget Impact</div>
+              <div class="value" id="mortgageBudgetImpact">$0/mo</div>
+              <div class="small">Housing cost sent to dashboard when toggle is enabled.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">PMI Status</div>
+              <div class="value" id="mortgagePMIStatus">Inactive</div>
+              <div class="small">PMI applies when down payment is under 20%.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">Down Payment %</div>
+              <div class="value" id="mortgageDownPct">0%</div>
+              <div class="small">Bigger down payments reduce PMI and loan size.</div>
+            </div>
+
+            <div class="card">
+              <div class="label">Dashboard Mode</div>
+              <div class="value" id="mortgageModeStatus">Using Rent</div>
+              <div class="small">Switch to mortgage mode to replace rent automatically.</div>
+            </div>
           </div>
-          <div class="card">
-            <div class="label">Price Comparison</div>
-            <div class="value">Save $120/mo</div>
-            <div class="small">Switching grocery stores + bulk buying basics.</div>
-          </div>
-          <div class="card">
-            <div class="label">Inflation-Safe Tips</div>
-            <ul class="tip-list">
-              <li>Keep cash in a high-yield savings account</li>
-              <li>Look into TIPS or other low-risk assets</li>
-              <li>Build a 3–6 month emergency fund</li>
-            </ul>
-          </div>
+
+          <div class="alerts" id="mortgageAlerts" style="margin-top: 20px;"></div>
         </div>
       </div>
     </div>
@@ -338,37 +623,298 @@
   <script>
     let incomeMode = 'monthly';
 
+    // Tabs
+    const dashboardTab = document.getElementById('dashboardTab');
+    const mortgageTab = document.getElementById('mortgageTab');
+    const dashboardPage = document.getElementById('dashboardPage');
+    const mortgagePage = document.getElementById('mortgagePage');
+
+    dashboardTab.addEventListener('click', () => switchPage('dashboard'));
+    mortgageTab.addEventListener('click', () => switchPage('mortgage'));
+
+    function switchPage(page) {
+      const isDashboard = page === 'dashboard';
+      dashboardTab.classList.toggle('active', isDashboard);
+      mortgageTab.classList.toggle('active', !isDashboard);
+      dashboardPage.classList.toggle('active', isDashboard);
+      mortgagePage.classList.toggle('active', !isDashboard);
+    }
+
+    // Dashboard income mode
     const monthlyBtn = document.getElementById('monthlyBtn');
     const biweeklyBtn = document.getElementById('biweeklyBtn');
-    const crisisMode = document.getElementById('crisisMode');
-    const inputs = document.querySelectorAll('input[type="number"], input[type="checkbox"]');
 
     monthlyBtn.addEventListener('click', () => {
       incomeMode = 'monthly';
       monthlyBtn.classList.add('active');
       biweeklyBtn.classList.remove('active');
-      updateDashboard();
+      syncMortgageIncomeFromDashboard();
+      updateAll();
     });
 
     biweeklyBtn.addEventListener('click', () => {
       incomeMode = 'biweekly';
       biweeklyBtn.classList.add('active');
       monthlyBtn.classList.remove('active');
-      updateDashboard();
+      syncMortgageIncomeFromDashboard();
+      updateAll();
     });
 
-    inputs.forEach(input => input.addEventListener('input', updateDashboard));
+    // Inputs
+    const allInputs = document.querySelectorAll('input, select');
+    allInputs.forEach(input => {
+      input.addEventListener('input', updateAll);
+      input.addEventListener('change', updateAll);
+    });
+
+    document.getElementById('syncIncomeBtn').addEventListener('click', () => {
+      syncMortgageIncomeFromDashboard();
+      updateAll();
+    });
 
     function formatMoney(num) {
-      return `$${Math.round(num).toLocaleString()}`;
+      const rounded = Math.round(num);
+      const sign = rounded < 0 ? '-' : '';
+      return `${sign}$${Math.abs(rounded).toLocaleString()}`;
     }
 
-    function calculateMortgage(principal = 250000, annualRate = 0.07, years = 30) {
+    function formatMoneyPrecise(num) {
+      return `$${Number(num).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    function getDashboardMonthlyIncome() {
+      const rawIncome = Number(document.getElementById('income').value) || 0;
+      return incomeMode === 'biweekly' ? (rawIncome * 26 / 12) : rawIncome;
+    }
+
+    function getDashboardAnnualIncome() {
+      return getDashboardMonthlyIncome() * 12;
+    }
+
+    function syncMortgageIncomeFromDashboard() {
+      document.getElementById('mortgageAnnualIncome').value = Math.round(getDashboardAnnualIncome());
+    }
+
+    // Mortgage logic translated from Python
+    function getInterestRate(creditScore) {
+      if (creditScore >= 760) return 0.0625;
+      if (creditScore >= 700) return 0.065;
+      if (creditScore >= 660) return 0.07;
+      if (creditScore >= 620) return 0.075;
+      return 0.085;
+    }
+
+    function calculateMonthlyMortgage(loanAmount, annualRate, years) {
       const monthlyRate = annualRate / 12;
-      const payments = years * 12;
-      const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, payments)) /
-        (Math.pow(1 + monthlyRate, payments) - 1);
-      return payment;
+      const n = years * 12;
+
+      if (n <= 0) return 0;
+      if (monthlyRate === 0) return loanAmount / n;
+
+      return loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, n)) /
+        (Math.pow(1 + monthlyRate, n) - 1);
+    }
+
+    function calculateAdditionalCosts(homePrice, downPayment) {
+      const safeHomePrice = Math.max(homePrice, 1);
+      const propertyTax = (homePrice * 0.012) / 12;
+      const insurance = (homePrice * 0.005) / 12;
+      const downPercent = downPayment / safeHomePrice;
+      const loanAmount = homePrice - downPayment;
+      const pmi = downPercent < 0.20 ? (Math.max(loanAmount, 0) * 0.005) / 12 : 0;
+
+      return { propertyTax, insurance, pmi };
+    }
+
+    function affordabilityCheck(monthlyIncome, monthlyDebt, housingCost) {
+      if (monthlyIncome <= 0) {
+        return {
+          housingRatio: 0,
+          totalDebtRatio: 0,
+          affordable: false
+        };
+      }
+
+      const housingRatio = housingCost / monthlyIncome;
+      const totalDebtRatio = (housingCost + monthlyDebt) / monthlyIncome;
+      const affordable = housingRatio <= 0.28 && totalDebtRatio <= 0.36;
+
+      return { housingRatio, totalDebtRatio, affordable };
+    }
+
+    function calculateMaxAffordableHome(creditScore, annualIncome, monthlyDebt, downPayment, loanTerm) {
+      const monthlyIncome = annualIncome / 12;
+      const maxHousing = monthlyIncome * 0.28;
+      const maxTotalDebt = monthlyIncome * 0.36;
+      const allowedHousing = Math.min(maxHousing, maxTotalDebt - monthlyDebt);
+
+      if (allowedHousing <= 0) return 0;
+
+      const interestRate = getInterestRate(creditScore);
+      const r = interestRate / 12;
+      const n = loanTerm * 12;
+
+      let homePrice = 50000;
+      const step = 1000;
+      let bestPrice = 0;
+
+      while (homePrice <= 2000000) {
+        const tax = (homePrice * 0.012) / 12;
+        const insurance = (homePrice * 0.005) / 12;
+        const downPercent = downPayment / Math.max(homePrice, 1);
+        const loanAmount = homePrice - downPayment;
+        const pmi = downPercent < 0.20 ? (Math.max(loanAmount, 0) * 0.005) / 12 : 0;
+
+        const remainingForMortgage = allowedHousing - (tax + insurance + pmi);
+        if (remainingForMortgage <= 0) break;
+
+        const loan = r === 0
+          ? remainingForMortgage * n
+          : remainingForMortgage * ((Math.pow(1 + r, n) - 1) / (r * Math.pow(1 + r, n)));
+
+        const estimatedPrice = loan + downPayment;
+
+        if (estimatedPrice >= homePrice) {
+          bestPrice = homePrice;
+          homePrice += step;
+        } else {
+          break;
+        }
+      }
+
+      return bestPrice;
+    }
+
+    function mortgageEstimator(creditScore, annualIncome, monthlyDebt, downPayment, homePrice, loanTerm) {
+      const monthlyIncome = annualIncome / 12;
+      const loanAmount = Math.max(homePrice - downPayment, 0);
+      const interestRate = getInterestRate(creditScore);
+      const mortgage = calculateMonthlyMortgage(loanAmount, interestRate, loanTerm);
+
+      const { propertyTax, insurance, pmi } = calculateAdditionalCosts(homePrice, downPayment);
+      const totalCost = mortgage + propertyTax + insurance + pmi;
+
+      const { housingRatio, totalDebtRatio, affordable } =
+        affordabilityCheck(monthlyIncome, monthlyDebt, totalCost);
+
+      const maxPrice = calculateMaxAffordableHome(
+        creditScore,
+        annualIncome,
+        monthlyDebt,
+        downPayment,
+        loanTerm
+      );
+
+      return {
+        interestRate: interestRate * 100,
+        mortgage,
+        tax: propertyTax,
+        insurance,
+        pmi,
+        totalCost,
+        housingRatio,
+        debtRatio: totalDebtRatio,
+        affordable,
+        maxHomePrice: maxPrice,
+        pmiActive: homePrice > 0 ? (downPayment / homePrice < 0.20) : false
+      };
+    }
+
+    function getMortgageInputs() {
+      return {
+        creditScore: Number(document.getElementById('mortgageCreditScore').value) || 0,
+        annualIncome: Number(document.getElementById('mortgageAnnualIncome').value) || 0,
+        monthlyDebt: Number(document.getElementById('mortgageMonthlyDebt').value) || 0,
+        downPayment: Number(document.getElementById('mortgageDownPayment').value) || 0,
+        homePrice: Number(document.getElementById('mortgageHomePrice').value) || 0,
+        loanTerm: Number(document.getElementById('mortgageLoanTerm').value) || 30,
+        useMortgageForBudget: document.getElementById('useMortgageForBudget').checked
+      };
+    }
+
+    function updateMortgagePage() {
+      const {
+        creditScore,
+        annualIncome,
+        monthlyDebt,
+        downPayment,
+        homePrice,
+        loanTerm,
+        useMortgageForBudget
+      } = getMortgageInputs();
+
+      const result = mortgageEstimator(
+        creditScore,
+        annualIncome,
+        monthlyDebt,
+        downPayment,
+        homePrice,
+        loanTerm
+      );
+
+      const safeHomePrice = Math.max(homePrice, 1);
+      const downPct = homePrice > 0 ? (downPayment / safeHomePrice) * 100 : 0;
+
+      document.getElementById('resultInterestRate').textContent = `${result.interestRate.toFixed(2)}%`;
+      document.getElementById('resultMortgage').textContent = formatMoneyPrecise(result.mortgage);
+      document.getElementById('resultTax').textContent = formatMoneyPrecise(result.tax);
+      document.getElementById('resultInsurance').textContent = formatMoneyPrecise(result.insurance);
+      document.getElementById('resultPMI').textContent = formatMoneyPrecise(result.pmi);
+      document.getElementById('resultTotalCost').textContent = formatMoneyPrecise(result.totalCost);
+      document.getElementById('resultHousingRatio').textContent = `${(result.housingRatio * 100).toFixed(2)}%`;
+      document.getElementById('resultDebtRatio').textContent = `${(result.debtRatio * 100).toFixed(2)}%`;
+      document.getElementById('resultAffordable').textContent = result.affordable ? '✅ AFFORDABLE' : '⚠️ NOT AFFORDABLE';
+      document.getElementById('resultMaxHome').textContent = formatMoney(result.maxHomePrice);
+
+      document.getElementById('mortgageBudgetImpact').textContent = formatMoney(result.totalCost);
+      document.getElementById('mortgagePMIStatus').textContent = result.pmiActive ? 'Active' : 'Inactive';
+      document.getElementById('mortgageDownPct').textContent = `${downPct.toFixed(1)}%`;
+      document.getElementById('mortgageModeStatus').textContent = useMortgageForBudget ? 'Using Mortgage' : 'Using Rent';
+
+      const mortgageAlerts = [];
+
+      if (downPct < 20) {
+        mortgageAlerts.push({
+          level: 'warn',
+          text: `PMI is active because your down payment is below 20%.`
+        });
+      } else {
+        mortgageAlerts.push({
+          level: 'safe',
+          text: `Your down payment is at or above 20%, so PMI is not being charged.`
+        });
+      }
+
+      if (!result.affordable) {
+        mortgageAlerts.push({
+          level: 'danger',
+          text: `This home exceeds standard affordability guidelines based on the 28/36 rule.`
+        });
+      } else {
+        mortgageAlerts.push({
+          level: 'safe',
+          text: `This home fits within standard affordability guidelines using your current inputs.`
+        });
+      }
+
+      if (result.maxHomePrice > 0 && homePrice > result.maxHomePrice) {
+        mortgageAlerts.push({
+          level: 'warn',
+          text: `Your selected home price is above the estimated max affordable price of ${formatMoney(result.maxHomePrice)}.`
+        });
+      }
+
+      if (annualIncome <= 0) {
+        mortgageAlerts.length = 0;
+        mortgageAlerts.push({
+          level: 'danger',
+          text: `Enter a valid annual income to calculate affordability correctly.`
+        });
+      }
+
+      document.getElementById('mortgageAlerts').innerHTML = mortgageAlerts
+        .map(alert => `<div class="alert ${alert.level}">${alert.text}</div>`)
+        .join('');
     }
 
     function updateDashboard() {
@@ -381,15 +927,32 @@
       let other = Number(document.getElementById('other').value) || 0;
       const emergencySavings = Number(document.getElementById('savings').value) || 0;
 
-      const crisis = crisisMode.checked;
+      const crisis = document.getElementById('crisisMode').checked;
+      const mortgageInputs = getMortgageInputs();
+      const mortgageResult = mortgageEstimator(
+        mortgageInputs.creditScore,
+        mortgageInputs.annualIncome,
+        mortgageInputs.monthlyDebt,
+        mortgageInputs.downPayment,
+        mortgageInputs.homePrice,
+        mortgageInputs.loanTerm
+      );
+
+      let housingCost = rent;
+      let housingLabel = 'Rent / Housing';
+
+      if (mortgageInputs.useMortgageForBudget) {
+        housingCost = mortgageResult.totalCost;
+        housingLabel = 'Mortgage';
+      }
 
       if (crisis) {
-        rent *= 1.08;
+        housingCost *= 1.08;
         food *= 1.18;
         transport *= 1.12;
       }
 
-      const needs = rent + food + transport;
+      const needs = housingCost + food + transport;
       const wants = other;
       const totalExpenses = needs + wants;
       const leftover = monthlyIncome - totalExpenses;
@@ -406,7 +969,12 @@
       document.getElementById('monthlyIncomeDisplay').textContent = formatMoney(monthlyIncome);
       document.getElementById('leftoverDisplay').textContent = formatMoney(leftover);
       document.getElementById('burnRateDisplay').textContent = `${burnRateMonths.toFixed(1)} months`;
-      document.getElementById('mortgageDisplay').textContent = `${formatMoney(calculateMortgage())}/mo`;
+      document.getElementById('mortgageDisplay').textContent = `${formatMoney(mortgageResult.totalCost)}/mo`;
+      document.getElementById('maxHomeDisplay').textContent = formatMoney(mortgageResult.maxHomePrice);
+      document.getElementById('mortgageDisplaySubtext').textContent =
+        mortgageInputs.useMortgageForBudget
+          ? 'Mortgage mode is active and replacing rent in the dashboard.'
+          : 'Mortgage tab estimate is available but dashboard is still using rent.';
 
       document.getElementById('needsText').textContent = `${formatMoney(needs)} / target ${needsTarget}%`;
       document.getElementById('wantsText').textContent = `${formatMoney(wants)} / target ${wantsTarget}%`;
@@ -421,10 +989,15 @@
       else if (needsPct > needsTarget || burnRateMonths < 3) status = 'Warning';
       document.getElementById('statusDisplay').textContent = status;
 
-      let creditScore = 'Good';
-      if (leftover < 200) creditScore = 'Poor';
-      else if (leftover < 800) creditScore = 'Fair';
-      document.getElementById('creditScoreDisplay').textContent = creditScore;
+      let creditScoreLabel = 'Good';
+      if (leftover < 200) creditScoreLabel = 'Poor';
+      else if (leftover < 800) creditScoreLabel = 'Fair';
+      document.getElementById('creditScoreDisplay').textContent = creditScoreLabel;
+
+      document.getElementById('mortgageModeNote').textContent =
+        mortgageInputs.useMortgageForBudget
+          ? `Dashboard is currently using Mortgage (${formatMoney(mortgageResult.totalCost)} / month before crisis adjustments).`
+          : 'Dashboard is currently using Rent / Housing.';
 
       const alerts = [];
 
@@ -456,6 +1029,20 @@
         });
       }
 
+      if (mortgageInputs.useMortgageForBudget) {
+        alerts.push({
+          level: mortgageResult.affordable ? 'safe' : 'warn',
+          text: mortgageResult.affordable
+            ? `🏠 Mortgage mode is active and your selected mortgage is within standard affordability guidelines.`
+            : `🏠 Mortgage mode is active, but this home is outside standard affordability guidelines.`
+        });
+
+        alerts.push({
+          level: 'warn',
+          text: `Dashboard housing is using ${housingLabel} at ${formatMoney(housingCost)}${crisis ? ' after crisis adjustments' : ''}.`
+        });
+      }
+
       if (alerts.length === 0) {
         alerts.push({
           level: 'safe',
@@ -465,14 +1052,18 @@
         });
       }
 
-      const alertsContainer = document.getElementById('alerts');
-      alertsContainer.innerHTML = alerts
+      document.getElementById('alerts').innerHTML = alerts
         .map(alert => `<div class="alert ${alert.level}">${alert.text}</div>`)
         .join('');
     }
 
-    updateDashboard();
+    function updateAll() {
+      updateMortgagePage();
+      updateDashboard();
+    }
+
+    syncMortgageIncomeFromDashboard();
+    updateAll();
   </script>
 </body>
 </html>
-
