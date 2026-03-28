@@ -17,7 +17,7 @@ def survival_months():
     return num_months
 
 
-def main():
+def calculate_score():
     # will calculate economic surival score monthly based on 
     # monthly income and expenses
     income = 0
@@ -35,6 +35,10 @@ def main():
         score = score + 5
 
     print(score)
+
+def main():
+    calculate_score()
+
 
 if __name__ == "__main__":
     main()

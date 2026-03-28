@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inflation Survival Budget MVP</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .hero {
+      margin-bottom: 24px;
+      padding: 20px;
+      background: #1e293b;
+      border-radius: 16px;
+      border: 1px solid #334155;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+    .hero p {
+      margin: 0;
+      color: #cbd5e1;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+    .panel {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    .section-title {
+      margin: 20px 0 10px;
+      font-size: 0.95rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      margin-bottom: 12px;
+    }
+    .toggle-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .toggle-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #e2e8f0;
+      cursor: pointer;
+    }
+    .toggle-btn.active {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+    .crisis-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      border-radius: 12px;
+      background: #3f1d1d;
+      border: 1px solid #7f1d1d;
+      margin-top: 8px;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #64748b;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    input:checked + .slider {
+      background: #ef4444;
+    }
+    input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .card .label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .card .value {
+      font-size: 1.6rem;
+      font-weight: bold;
+    }
+    .budget-bars {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .bar-wrap { background: #0f172a; padding: 14px; border-radius: 14px; border: 1px solid #334155; }
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .bar {
+      height: 14px;
+      background: #334155;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .fill.needs { background: #f59e0b; }
+    .fill.wants { background: #38bdf8; }
+    .fill.savings { background: #22c55e; }
+    .alerts, .extras {
+      display: grid;
+      gap: 12px;
+    }
+    .alert {
+      padding: 14px;
+      border-radius: 12px;
+      border-left: 5px solid;
+      background: #0f172a;
+    }
+    .safe { border-color: #22c55e; }
+    .warn { border-color: #f59e0b; }
+    .danger { border-color: #ef4444; }
+    .small {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .extras-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .tip-list {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: #cbd5e1;
+    }
+    @media (max-width: 900px) {
+      .grid, .cards, .extras-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="hero">
+      <h1>Inflation Survival Dashboard</h1>
+      <p>Build a crisis-ready budget that adapts during inflation spikes or economic crashes.</p>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <h2>Inputs</h2>
+
+        <div class="section-title">Income</div>
+        <div class="toggle-row">
+          <button class="toggle-btn active" id="monthlyBtn">Monthly</button>
+          <button class="toggle-btn" id="biweeklyBtn">Biweekly</button>
+        </div>
+        <label for="income">Income Amount ($)</label>
+        <input type="number" id="income" value="4000" min="0" />
+
+        <div class="section-title">Expenses</div>
+        <label for="rent">Rent / Housing</label>
+        <input type="number" id="rent" value="1400" min="0" />
+
+        <label for="food">Food</label>
+        <input type="number" id="food" value="500" min="0" />
+
+        <label for="transport">Transport</label>
+        <input type="number" id="transport" value="250" min="0" />
+
+        <label for="other">Other / Discretionary</label>
+        <input type="number" id="other" value="600" min="0" />
+
+        <label for="savings">Current Emergency Savings ($)</label>
+        <input type="number" id="savings" value="3000" min="0" />
+
+        <div class="crisis-toggle">
+          <div>
+            <strong>Crisis Mode!</strong>
+            <div class="small">Simulate inflation and survival budgeting</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="crisisMode" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Dashboard</h2>
+
+        <div class="cards">
+          <div class="card">
+            <div class="label">Monthly Income</div>
+            <div class="value" id="monthlyIncomeDisplay">$4,000</div>
+          </div>
+          <div class="card">
+            <div class="label">Leftover Money</div>
+            <div class="value" id="leftoverDisplay">$1,250</div>
+          </div>
+          <div class="card">
+            <div class="label">Emergency Fund Survival</div>
+            <div class="value" id="burnRateDisplay">1.1 months</div>
+          </div>
+          <div class="card">
+            <div class="label">Budget Status</div>
+            <div class="value" id="statusDisplay">Warning</div>
+          </div>
+        </div>
+
+        <div class="budget-bars">
+          <div class="bar-wrap">
+            <div class="bar-header">
+              <span>Needs</span>
+              <span id="needsText">$2,150 / 50%</span>
+            </div>
+            <div class="bar"><div class="fill needs" id="needsBar" style="width: 0%"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-header">
+              <span>Wants</span>
+              <span id="wantsText">$600 / 30%</span>
+            </div>
+            <div class="bar"><div class="fill wants" id="wantsBar" style="width: 0%"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-header">
+              <span>Savings Potential</span>
+              <span id="savingsText">$1,250 / 20%</span>
+            </div>
+            <div class="bar"><div class="fill savings" id="savingsBar" style="width: 0%"></div></div>
+          </div>
+        </div>
+
+        <h3>Survival Insights</h3>
+        <div class="alerts" id="alerts"></div>
+
+        <div class="extras-grid">
+          <div class="card">
+            <div class="label">Mock Credit Score</div>
+            <div class="value" id="creditScoreDisplay">Fair</div>
+            <div class="small">Based on remaining monthly cash flow.</div>
+          </div>
+          <div class="card">
+            <div class="label">Mortgage Estimate</div>
+            <div class="value" id="mortgageDisplay">$1,610/mo</div>
+            <div class="small">Simple sample estimate on a $250k loan.</div>
+          </div>
+          <div class="card">
+            <div class="label">Price Comparison</div>
+            <div class="value">Save $120/mo</div>
+            <div class="small">Switching grocery stores + bulk buying basics.</div>
+          </div>
+          <div class="card">
+            <div class="label">Inflation-Safe Tips</div>
+            <ul class="tip-list">
+              <li>Keep cash in a high-yield savings account</li>
+              <li>Look into TIPS or other low-risk assets</li>
+              <li>Build a 3–6 month emergency fund</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let incomeMode = 'monthly';
+
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const biweeklyBtn = document.getElementById('biweeklyBtn');
+    const crisisMode = document.getElementById('crisisMode');
+    const inputs = document.querySelectorAll('input[type="number"], input[type="checkbox"]');
+
+    monthlyBtn.addEventListener('click', () => {
+      incomeMode = 'monthly';
+      monthlyBtn.classList.add('active');
+      biweeklyBtn.classList.remove('active');
+      updateDashboard();
+    });
+
+    biweeklyBtn.addEventListener('click', () => {
+      incomeMode = 'biweekly';
+      biweeklyBtn.classList.add('active');
+      monthlyBtn.classList.remove('active');
+      updateDashboard();
+    });
+
+    inputs.forEach(input => input.addEventListener('input', updateDashboard));
+
+    function formatMoney(num) {
+      return `$${Math.round(num).toLocaleString()}`;
+    }
+
+    function calculateMortgage(principal = 250000, annualRate = 0.07, years = 30) {
+      const monthlyRate = annualRate / 12;
+      const payments = years * 12;
+      const payment = principal * (monthlyRate * Math.pow(1 + monthlyRate, payments)) /
+        (Math.pow(1 + monthlyRate, payments) - 1);
+      return payment;
+    }
+
+    function updateDashboard() {
+      const rawIncome = Number(document.getElementById('income').value) || 0;
+      let monthlyIncome = incomeMode === 'biweekly' ? rawIncome * 26 / 12 : rawIncome;
+
+      let rent = Number(document.getElementById('rent').value) || 0;
+      let food = Number(document.getElementById('food').value) || 0;
+      let transport = Number(document.getElementById('transport').value) || 0;
+      let other = Number(document.getElementById('other').value) || 0;
+      const emergencySavings = Number(document.getElementById('savings').value) || 0;
+
+      const crisis = crisisMode.checked;
+
+      if (crisis) {
+        rent *= 1.08;
+        food *= 1.18;
+        transport *= 1.12;
+      }
+
+      const needs = rent + food + transport;
+      const wants = other;
+      const totalExpenses = needs + wants;
+      const leftover = monthlyIncome - totalExpenses;
+      const burnRateMonths = totalExpenses > 0 ? emergencySavings / totalExpenses : 0;
+
+      const needsTarget = crisis ? 70 : 50;
+      const wantsTarget = crisis ? 20 : 30;
+      const savingsTarget = crisis ? 10 : 20;
+
+      const needsPct = monthlyIncome > 0 ? (needs / monthlyIncome) * 100 : 0;
+      const wantsPct = monthlyIncome > 0 ? (wants / monthlyIncome) * 100 : 0;
+      const savingsPct = monthlyIncome > 0 ? Math.max(0, (leftover / monthlyIncome) * 100) : 0;
+
+      document.getElementById('monthlyIncomeDisplay').textContent = formatMoney(monthlyIncome);
+      document.getElementById('leftoverDisplay').textContent = formatMoney(leftover);
+      document.getElementById('burnRateDisplay').textContent = `${burnRateMonths.toFixed(1)} months`;
+      document.getElementById('mortgageDisplay').textContent = `${formatMoney(calculateMortgage())}/mo`;
+
+      document.getElementById('needsText').textContent = `${formatMoney(needs)} / target ${needsTarget}%`;
+      document.getElementById('wantsText').textContent = `${formatMoney(wants)} / target ${wantsTarget}%`;
+      document.getElementById('savingsText').textContent = `${formatMoney(Math.max(0, leftover))} / target ${savingsTarget}%`;
+
+      document.getElementById('needsBar').style.width = `${Math.min(needsPct, 100)}%`;
+      document.getElementById('wantsBar').style.width = `${Math.min(wantsPct, 100)}%`;
+      document.getElementById('savingsBar').style.width = `${Math.min(savingsPct, 100)}%`;
+
+      let status = 'Safe';
+      if (leftover < 0 || burnRateMonths < 1) status = 'Danger';
+      else if (needsPct > needsTarget || burnRateMonths < 3) status = 'Warning';
+      document.getElementById('statusDisplay').textContent = status;
+
+      let creditScore = 'Good';
+      if (leftover < 200) creditScore = 'Poor';
+      else if (leftover < 800) creditScore = 'Fair';
+      document.getElementById('creditScoreDisplay').textContent = creditScore;
+
+      const alerts = [];
+
+      if (needsPct > needsTarget) {
+        alerts.push({
+          level: 'danger',
+          text: `❗ Essentials are ${needsPct.toFixed(1)}% of your income. Try reducing needs by ${formatMoney(needs - monthlyIncome * (needsTarget / 100))}.`
+        });
+      }
+
+      if (leftover < 0) {
+        alerts.push({
+          level: 'danger',
+          text: `❗ You are overspending by ${formatMoney(Math.abs(leftover))} per month.`
+        });
+      }
+
+      if (burnRateMonths > 0 && burnRateMonths < 3) {
+        alerts.push({
+          level: burnRateMonths < 1 ? 'danger' : 'warn',
+          text: `❗ Your emergency fund will last only ${burnRateMonths.toFixed(1)} months at your current burn rate.`
+        });
+      }
+
+      if (wantsPct > wantsTarget) {
+        alerts.push({
+          level: 'warn',
+          text: `Reduce discretionary spending by ${formatMoney(wants - monthlyIncome * (wantsTarget / 100))} to hit your target.`
+        });
+      }
+
+      if (alerts.length === 0) {
+        alerts.push({
+          level: 'safe',
+          text: crisis
+            ? 'Crisis Mode active: your budget is currently stable for a high-inflation scenario.'
+            : 'Your budget is currently within healthy target ranges.'
+        });
+      }
+
+      const alertsContainer = document.getElementById('alerts');
+      alertsContainer.innerHTML = alerts
+        .map(alert => `<div class="alert ${alert.level}">${alert.text}</div>`)
+        .join('');
+    }
+
+    updateDashboard();
+  </script>
+</body>
+</html>
+
