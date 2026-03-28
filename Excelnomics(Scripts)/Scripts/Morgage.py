@@ -1,4 +1,6 @@
-import math
+from flask import Flask, request, jsonify, render_template
+
+app = Flask(__name__)
 
 # -------------------------------
 # Interest Rate Based on Credit Score
@@ -20,28 +22,24 @@ def get_interest_rate(credit_score):
 # Monthly Mortgage Payment
 # -------------------------------
 def calculate_monthly_mortgage(loan_amount, annual_rate, years):
-    monthly_rate = annual_rate / 12
+    r = annual_rate / 12
     n = years * 12
 
-    if monthly_rate == 0:
+    if r == 0:
         return loan_amount / n
 
-    return loan_amount * (monthly_rate * (1 + monthly_rate)**n) / ((1 + monthly_rate)**n - 1)
+    return loan_amount * (r * (1 + r)**n) / ((1 + r)**n - 1)
 
 
 # -------------------------------
 # Taxes, Insurance, PMI (FIXED)
 # -------------------------------
 def calculate_additional_costs(home_price, down_payment):
-    """
-    Monthly costs:
-    - Property tax: 1.2% yearly → monthly
-    - Insurance: 0.5% yearly → monthly
-    - PMI: ONLY if down payment < 20%, based on LOAN amount
-    """
+    TAX_RATE = 0.01
+    INSURANCE_RATE = 0.005
 
-    property_tax = (home_price * 0.012) / 12
-    insurance = (home_price * 0.005) / 12
+    tax = (home_price * TAX_RATE) / 12
+    insurance = (home_price * INSURANCE_RATE) / 12
 
     down_percent = down_payment / home_price
     loan_amount = home_price - down_payment
@@ -51,19 +49,7 @@ def calculate_additional_costs(home_price, down_payment):
     else:
         pmi = 0
 
-    return property_tax, insurance, pmi
-
-
-# -------------------------------
-# Affordability Check (28/36 rule)
-# -------------------------------
-def affordability_check(monthly_income, monthly_debt, housing_cost):
-    housing_ratio = housing_cost / monthly_income
-    total_debt_ratio = (housing_cost + monthly_debt) / monthly_income
-
-    affordable = housing_ratio <= 0.28 and total_debt_ratio <= 0.36
-
-    return housing_ratio, total_debt_ratio, affordable
+    return tax, insurance, pmi
 
 
 # -------------------------------
@@ -74,9 +60,9 @@ def calculate_max_affordable_home(credit_score, annual_income, monthly_debt, dow
     monthly_income = annual_income / 12
 
     max_housing = monthly_income * 0.28
-    max_total_debt = monthly_income * 0.36
+    max_total = monthly_income * 0.36
 
-    allowed_housing = min(max_housing, max_total_debt - monthly_debt)
+    allowed_housing = min(max_housing, max_total - monthly_debt)
 
     if allowed_housing <= 0:
         return 0
@@ -90,7 +76,7 @@ def calculate_max_affordable_home(credit_score, annual_income, monthly_debt, dow
     best_price = 0
 
     while home_price <= 2000000:
-        tax = (home_price * 0.012) / 12
+        tax = (home_price * 0.01) / 12
         insurance = (home_price * 0.005) / 12
 
         down_percent = down_payment / home_price
@@ -101,13 +87,12 @@ def calculate_max_affordable_home(credit_score, annual_income, monthly_debt, dow
         else:
             pmi = 0
 
-        remaining_for_mortgage = allowed_housing - (tax + insurance + pmi)
+        remaining = allowed_housing - (tax + insurance + pmi)
 
-        if remaining_for_mortgage <= 0:
+        if remaining <= 0:
             break
 
-        loan = remaining_for_mortgage * ((1 + r)**n - 1) / (r * (1 + r)**n)
-
+        loan = remaining * ((1 + r)**n - 1) / (r * (1 + r)**n)
         estimated_price = loan + down_payment
 
         if estimated_price >= home_price:
@@ -120,80 +105,69 @@ def calculate_max_affordable_home(credit_score, annual_income, monthly_debt, dow
 
 
 # -------------------------------
-# Full Estimator
+# Main Estimator
 # -------------------------------
-def mortgage_estimator(credit_score, annual_income, monthly_debt, down_payment, home_price, loan_term):
+def mortgage_estimator(credit_score, income, debt, down_payment, home_price, term):
 
-    monthly_income = annual_income / 12
+    monthly_income = income / 12
     loan_amount = home_price - down_payment
 
-    interest_rate = get_interest_rate(credit_score)
+    rate = get_interest_rate(credit_score)
 
-    mortgage = calculate_monthly_mortgage(loan_amount, interest_rate, loan_term)
+    mortgage = calculate_monthly_mortgage(loan_amount, rate, term)
     tax, insurance, pmi = calculate_additional_costs(home_price, down_payment)
 
     total_cost = mortgage + tax + insurance + pmi
 
-    housing_ratio, debt_ratio, affordable = affordability_check(monthly_income, monthly_debt, total_cost)
+    housing_ratio = total_cost / monthly_income
+    debt_ratio = (total_cost + debt) / monthly_income
 
-    max_price = calculate_max_affordable_home(credit_score, annual_income, monthly_debt, down_payment, loan_term)
+    max_price = calculate_max_affordable_home(
+        credit_score, income, debt, down_payment, term
+    )
 
     return {
-        "interest_rate": interest_rate * 100,
-        "mortgage": mortgage,
-        "tax": tax,
-        "insurance": insurance,
-        "pmi": pmi,
-        "total_cost": total_cost,
-        "housing_ratio": housing_ratio,
-        "debt_ratio": debt_ratio,
-        "affordable": affordable,
-        "max_home_price": max_price,
-        "pmi_active": down_payment / home_price < 0.20
+        "interest_rate": round(rate * 100, 2),
+        "mortgage": round(mortgage, 2),
+        "tax": round(tax, 2),
+        "insurance": round(insurance, 2),
+        "pmi": round(pmi, 2),
+        "total_cost": round(total_cost, 2),
+        "housing_ratio": round(housing_ratio * 100, 2),
+        "debt_ratio": round(debt_ratio * 100, 2),
+        "affordable": housing_ratio <= 0.28 and debt_ratio <= 0.36,
+        "pmi_active": down_payment / home_price < 0.20,
+        "max_home_price": int(max_price)
     }
 
 
 # -------------------------------
-# MANUAL INPUTS (EDIT THESE)
+# ROUTES
 # -------------------------------
-if __name__ == "__main__":
 
-    credit_score = 730
-    annual_income = 120000
-    monthly_debt = 1000
-    down_payment = 50000
-    home_price = 450000
-    loan_term = 30
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/calculate_mortgage", methods=["POST"])
+def calculate_mortgage_api():
+    data = request.get_json()
 
     result = mortgage_estimator(
-        credit_score,
-        annual_income,
-        monthly_debt,
-        down_payment,
-        home_price,
-        loan_term
+        int(data["credit_score"]),
+        float(data["income"]),
+        float(data["debt"]),
+        float(data["down_payment"]),
+        float(data["home_price"]),
+        int(data["term"])
     )
 
-    print("\n========== RESULTS ==========")
+    return jsonify(result)
 
-    print("\n--- CURRENT HOUSE ---")
-    print(f"Home Price: ${home_price}")
-    print(f"Interest Rate: {result['interest_rate']:.2f}%")
-    print(f"Mortgage Payment: ${result['mortgage']:.2f}")
-    print(f"Monthly Tax: ${result['tax']:.2f}")
-    print(f"Insurance: ${result['insurance']:.2f}")
-    print(f"PMI: ${result['pmi']:.2f}")
-    print(f"PMI Active: {'YES' if result['pmi_active'] else 'NO'}")
-    print(f"Total Monthly Cost: ${result['total_cost']:.2f}")
 
-    print("\n--- AFFORDABILITY ---")
-    print(f"Housing Ratio: {result['housing_ratio']*100:.2f}%")
-    print(f"Debt Ratio: {result['debt_ratio']*100:.2f}%")
-
-    if result["affordable"]:
-        print("✅ AFFORDABLE")
-    else:
-        print("⚠️ NOT AFFORDABLE")
-
-    print("\n--- MAX AFFORDABLE HOME PRICE ---")
-    print(f"💡 You can afford up to: ${result['max_home_price']:,}")
+# -------------------------------
+# RUN
+# -------------------------------
+if __name__ == "__main__":
+    app.run(debug=True)
