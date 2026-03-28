@@ -346,6 +346,7 @@
     <div class="top-tabs">
       <button class="page-tab active" id="dashboardTab">Dashboard</button>
       <button class="page-tab" id="mortgageTab">Mortgage</button>
+      <button class="page-tab" onclick="window.location.href='/score-page'">Score</button>
     </div>
 
     <!-- DASHBOARD PAGE -->
@@ -626,11 +627,13 @@
     // Tabs
     const dashboardTab = document.getElementById('dashboardTab');
     const mortgageTab = document.getElementById('mortgageTab');
+    const scoreTab = document.getElementById('scoreTab');
     const dashboardPage = document.getElementById('dashboardPage');
     const mortgagePage = document.getElementById('mortgagePage');
 
     dashboardTab.addEventListener('click', () => switchPage('dashboard'));
     mortgageTab.addEventListener('click', () => switchPage('mortgage'));
+    scoreTab.addEventListener('click', () => switchPage('/score'))
 
     function switchPage(page) {
       const isDashboard = page === 'dashboard';
