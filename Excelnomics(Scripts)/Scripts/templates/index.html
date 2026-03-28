@@ -346,7 +346,7 @@
     <div class="top-tabs">
       <button class="page-tab active" id="dashboardTab">Dashboard</button>
       <button class="page-tab" id="mortgageTab">Mortgage</button>
-      <button class="page-tab" onclick="window.location.href='/score-page'">Score</button>
+      <button class="page-tab" id="portfolioTab">Portfolio</button>
     </div>
 
     <!-- DASHBOARD PAGE -->
@@ -619,7 +619,116 @@
         </div>
       </div>
     </div>
+    <!-- PORTFOLIO PAGE -->
+<div class="page" id="portfolioPage">
+  <div class="grid">
+    <div class="panel">
+      <h2>Portfolio Inputs</h2>
+
+      <div class="section-title">Investment Setup</div>
+
+      <label for="portfolioAmount">Portfolio Dollar Amount ($)</label>
+      <input type="number" id="portfolioAmount" value="50000" min="0" />
+
+      <div class="crisis-toggle">
+        <div>
+          <strong>Auto Refresh</strong>
+          <div class="small">Refresh live market data every 30 seconds</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="portfolioAutoRefresh" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button class="toggle-btn" id="refreshPortfolioBtn" style="width: 100%; margin-top: 14px;">
+        Refresh Market Data
+      </button>
+
+      <div class="note-box">
+        <strong>Assumption:</strong>
+        <div class="small">
+          Your entered portfolio amount is converted into SPY-equivalent shares when analyzed,
+          so the live value can move as SPY updates.
+        </div>
+      </div>
+
+      <div class="note-box">
+        <strong>Last Update:</strong>
+        <div class="small" id="portfolioLastUpdated">Not loaded yet</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Portfolio Dashboard</h2>
+
+      <div class="cards">
+        <div class="card">
+          <div class="label">SPY Price</div>
+          <div class="value" id="portfolioSpyDisplay">$0</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Estimated Portfolio Value</div>
+          <div class="value" id="portfolioValueDisplay">$0</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Market Action</div>
+          <div class="value" id="portfolioActionDisplay">—</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Market Regime</div>
+          <div class="value" id="portfolioRegimeDisplay">—</div>
+        </div>
+      </div>
+
+      <div class="mortgage-highlight">
+        <div class="card">
+          <div class="label">VIX</div>
+          <div class="value" id="portfolioVixDisplay">0</div>
+          <div class="small">Market fear / volatility indicator</div>
+        </div>
+
+        <div class="card">
+          <div class="label">200-Day Moving Average</div>
+          <div class="value" id="portfolioMa200Display">$0</div>
+          <div class="small">Long-term SPY trend</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Fed Funds Rate</div>
+          <div class="value" id="portfolioFedDisplay">0%</div>
+          <div class="small">Liquidity / tightening signal</div>
+        </div>
+
+        <div class="card">
+          <div class="label">Unemployment</div>
+          <div class="value" id="portfolioUnemploymentDisplay">0%</div>
+          <div class="small">Labor market health</div>
+        </div>
+      </div>
+
+      <div class="result-list" style="margin-top: 20px;">
+        <div class="result-row">
+          <div class="result-label">Score</div>
+          <div class="result-value" id="portfolioScoreDisplay">0</div>
+        </div>
+
+        <div class="result-row">
+          <div class="result-label">SPY-Equivalent Shares</div>
+          <div class="result-value" id="portfolioSharesDisplay">0</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 20px;">Signals</h3>
+      <div class="alerts" id="portfolioReasons"></div>
+      <div class="alerts" id="portfolioAlerts" style="margin-top: 14px;"></div>
+    </div>
   </div>
+ </div>
+</div>
 
   <script>
     let incomeMode = 'monthly';
@@ -627,21 +736,28 @@
     // Tabs
     const dashboardTab = document.getElementById('dashboardTab');
     const mortgageTab = document.getElementById('mortgageTab');
-    
     const dashboardPage = document.getElementById('dashboardPage');
     const mortgagePage = document.getElementById('mortgagePage');
+    const portfolioTab = document.getElementById('portfolioTab');
+    const portfolioPage = document.getElementById('portfolioPage');
 
+    portfolioTab.addEventListener('click', () => switchPage('portfolio'));
     dashboardTab.addEventListener('click', () => switchPage('dashboard'));
     mortgageTab.addEventListener('click', () => switchPage('mortgage'));
-    
 
     function switchPage(page) {
-      const isDashboard = page === 'dashboard';
-      dashboardTab.classList.toggle('active', isDashboard);
-      mortgageTab.classList.toggle('active', !isDashboard);
-      dashboardPage.classList.toggle('active', isDashboard);
-      mortgagePage.classList.toggle('active', !isDashboard);
-    }
+    const isDashboard = page === 'dashboard';
+    const isMortgage = page === 'mortgage';
+    const isPortfolio = page === 'portfolio';
+
+    dashboardTab.classList.toggle('active', isDashboard);
+    mortgageTab.classList.toggle('active', isMortgage);
+    portfolioTab.classList.toggle('active', isPortfolio);
+
+    dashboardPage.classList.toggle('active', isDashboard);
+    mortgagePage.classList.toggle('active', isMortgage);
+    portfolioPage.classList.toggle('active', isPortfolio);
+}
 
     // Dashboard income mode
     const monthlyBtn = document.getElementById('monthlyBtn');
@@ -1065,8 +1181,116 @@
       updateDashboard();
     }
 
+    let portfolioEquivalentShares = null;
+let portfolioRefreshInterval = null;
+let lastSpyForPortfolio = null;
+
+function formatMoneyPrecise2(num) {
+  return `$${Number(num).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+async function fetchPortfolioData(resetShares = false) {
+  const reasonsContainer = document.getElementById('portfolioReasons');
+  const alertsContainer = document.getElementById('portfolioAlerts');
+
+  reasonsContainer.innerHTML = `<div class="alert warn">Loading market data...</div>`;
+  alertsContainer.innerHTML = '';
+
+  try {
+    const response = await fetch('/portfolio-data');
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error || 'Failed to fetch portfolio data');
+    }
+
+    const portfolioAmount = Number(document.getElementById('portfolioAmount').value) || 0;
+    const spyPrice = Number(data.spy) || 0;
+
+    if (resetShares || portfolioEquivalentShares === null || lastSpyForPortfolio === null) {
+      portfolioEquivalentShares = spyPrice > 0 ? portfolioAmount / spyPrice : 0;
+    }
+
+    const estimatedPortfolioValue = portfolioEquivalentShares * spyPrice;
+    lastSpyForPortfolio = spyPrice;
+
+    document.getElementById('portfolioSpyDisplay').textContent = formatMoneyPrecise2(data.spy);
+    document.getElementById('portfolioValueDisplay').textContent = formatMoneyPrecise2(estimatedPortfolioValue);
+    document.getElementById('portfolioActionDisplay').textContent = data.action;
+    document.getElementById('portfolioRegimeDisplay').textContent = data.regime;
+
+    document.getElementById('portfolioVixDisplay').textContent = Number(data.vix).toFixed(2);
+    document.getElementById('portfolioMa200Display').textContent = formatMoneyPrecise2(data.ma200);
+    document.getElementById('portfolioFedDisplay').textContent = `${Number(data.fed).toFixed(2)}%`;
+    document.getElementById('portfolioUnemploymentDisplay').textContent = `${Number(data.unemployment).toFixed(2)}%`;
+
+    document.getElementById('portfolioScoreDisplay').textContent = data.score;
+    document.getElementById('portfolioSharesDisplay').textContent = portfolioEquivalentShares.toFixed(2);
+    document.getElementById('portfolioLastUpdated').textContent = new Date().toLocaleTimeString();
+
+    reasonsContainer.innerHTML = (data.reasons || [])
+      .map(reason => `<div class="alert safe">${reason}</div>`)
+      .join('');
+
+    const alerts = [];
+
+    if (data.action === 'BUY') {
+      alerts.push({ level: 'safe', text: 'Signal engine currently favors risk-taking conditions.' });
+    } else if (data.action === 'SELL') {
+      alerts.push({ level: 'danger', text: 'Signal engine currently favors a defensive stance.' });
+    } else {
+      alerts.push({ level: 'warn', text: 'Signal engine is neutral. Current conditions suggest patience.' });
+    }
+
+    if (Number(data.vix) > 30) {
+      alerts.push({ level: 'danger', text: 'VIX is elevated, meaning volatility and fear are high.' });
+    }
+
+    if (Number(data.spy) < Number(data.ma200)) {
+      alerts.push({ level: 'warn', text: 'SPY is below its 200-day average, which is generally bearish.' });
+    }
+
+    alertsContainer.innerHTML = alerts
+      .map(alert => `<div class="alert ${alert.level}">${alert.text}</div>`)
+      .join('');
+
+  } catch (error) {
+    reasonsContainer.innerHTML = '';
+    alertsContainer.innerHTML = `<div class="alert danger">${error.message}</div>`;
+  }
+}
+
+function setupPortfolioEvents() {
+  document.getElementById('refreshPortfolioBtn').addEventListener('click', () => {
+    fetchPortfolioData(false);
+  });
+
+  document.getElementById('portfolioAmount').addEventListener('input', () => {
+    portfolioEquivalentShares = null;
+    fetchPortfolioData(true);
+  });
+
+  document.getElementById('portfolioAutoRefresh').addEventListener('change', (e) => {
+    if (portfolioRefreshInterval) {
+      clearInterval(portfolioRefreshInterval);
+      portfolioRefreshInterval = null;
+    }
+
+    if (e.target.checked) {
+      portfolioRefreshInterval = setInterval(() => {
+        fetchPortfolioData(false);
+      }, 30000);
+    }
+  });
+}
+
     syncMortgageIncomeFromDashboard();
     updateAll();
+    setupPortfolioEvents();
+    fetchPortfolioData(true);
   </script>
 </body>
 </html>

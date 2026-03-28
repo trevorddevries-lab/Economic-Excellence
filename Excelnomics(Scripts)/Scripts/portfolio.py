@@ -167,6 +167,36 @@ def main():
     print(f"Action       : {action}")
     print(f"Regime       : {regime}")
 
+def get_market_snapshot(portfolio_value=50000):
+    market = MarketData()
+    engine = DecisionEngine()
+
+    spy = market.get_spy_price()
+    vix = market.get_vix()
+    ma200 = market.get_ma200()
+    fed = market.get_fed_funds_rate()
+    unemp = market.get_unemployment()
+
+    score, reasons = engine.evaluate(spy, ma200, vix, fed, unemp)
+    action = engine.recommendation(score)
+    regime = engine.get_regime(score)
+
+    shares = portfolio_value / spy
+    portfolio = Portfolio(shares)
+
+    return {
+        "spy": spy,
+        "vix": vix,
+        "ma200": ma200,
+        "fed": fed,
+        "unemployment": unemp,
+        "score": score,
+        "action": action,
+        "regime": regime,
+        "reasons": reasons,
+        "shares": shares,
+        "portfolio_value": portfolio.value(spy)
+    }
 
 if __name__ == "__main__":
     main()
