@@ -627,13 +627,13 @@
     // Tabs
     const dashboardTab = document.getElementById('dashboardTab');
     const mortgageTab = document.getElementById('mortgageTab');
-    const scoreTab = document.getElementById('scoreTab');
+    
     const dashboardPage = document.getElementById('dashboardPage');
     const mortgagePage = document.getElementById('mortgagePage');
 
     dashboardTab.addEventListener('click', () => switchPage('dashboard'));
     mortgageTab.addEventListener('click', () => switchPage('mortgage'));
-    scoreTab.addEventListener('click', () => switchPage('/score'))
+    
 
     function switchPage(page) {
       const isDashboard = page === 'dashboard';
