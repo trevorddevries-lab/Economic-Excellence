@@ -8,19 +8,19 @@ Simple budgeting app with four main components: A dashboard that gives an overal
 <img width="3024" height="1568" alt="image" src="https://github.com/user-attachments/assets/2b1a2581-21bd-4202-bce2-7e394a8d8303" />
 
 
-Dashboard also has a crisis feature, that proritizes fincancial needs over wants
+(Dashboard also has a crisis feature, that proritizes fincancial needs over wants)
 <img width="3022" height="1564" alt="image" src="https://github.com/user-attachments/assets/379a3111-7dfe-4272-bf1b-500f12a330fa" />
 
 
-Mortgage Tab
+***Mortgage***
 <img width="3020" height="1574" alt="image" src="https://github.com/user-attachments/assets/bdfd3414-c182-481f-95f5-c2112b7f5f14" />
 
 
-Portfolio Tab
+***Portfolio***
 <img width="3020" height="1566" alt="image" src="https://github.com/user-attachments/assets/54b5ea34-4ba6-4c53-af48-5155c5d9da97" />
 
 
-Financial Health Tab
+***Financial Health***
 <img width="3024" height="1560" alt="image" src="https://github.com/user-attachments/assets/d9c85f67-cef7-4a7d-bf6f-7b8ea504d5fd" />
 
 
